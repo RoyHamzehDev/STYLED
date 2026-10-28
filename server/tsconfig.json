@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    // File Layout: src/ AND generated/ (Prisma client) are compiled, so main.js ends up in dist/src/
+    "rootDir": ".",
+    "outDir": "./dist",
+
+    // Environment Settings ("type": "module" in package.json → ESM output, like Nest 12 itself)
+    "module": "nodenext",
+    "target": "es2023",
+    "types": ["node"],
+
+    // NestJS: decorators + the constructor type metadata that dependency injection reads
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    // Other Outputs
+    "sourceMap": true,
+
+    // Stricter Typechecking Options
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    // Recommended Options
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true
+  },
+  "include": ["src", "generated"]
+}

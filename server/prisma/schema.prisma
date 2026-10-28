@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Category {
+  TOP
+  BOTTOM
+  DRESS
+  OUTERWEAR
+  FOOTWEAR
+  ACCESSORIES
+  OTHER
+}
+
+enum Style {
+  CASUAL
+  FORMAL
+  SPORTY
+  VINTAGE
+  BOHEMIAN
+  CHIC
+  PREPPY
+  STREETWEAR
+  MINIMALIST
+  ECLECTIC
+}
+
+enum Color {
+  RED
+  BLUE
+  GREEN
+  YELLOW
+  ORANGE
+  PURPLE
+  PINK
+  BROWN
+  BLACK
+  WHITE
+  GRAY
+  MULTICOLOR
+  NUDE
+}
+
+enum Season {
+  SPRING
+  SUMMER
+  FALL
+  WINTER
+}
+
+model User {
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String   @unique
+  passwordHash    String
+  preferredStyles Style[]
+  favoriteColors  Color[]
+  createdAt       DateTime @default(now())
+
+  clothingItems ClothingItem[]
+  outfits       Outfit[] // CHANGED: "Outfits" -> "outfits" (camelCase)
+  feedbacks     Feedback[]
+}
+
+model ClothingItem {
+  id        Int      @id @default(autoincrement())
+  name      String
+  category  Category
+  styles    Style[] // a clothing item can have multiple styles
+  colors    Color[] // a clothing item can have multiple colors
+  seasons   Season[] // a clothing item can fit multiple seasons
+  imageUrl  String
+  createdAt DateTime @default(now())
+
+  userId  Int
+  user    User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  outfits OutfitClothingItem[] // CHANGED: was OutfitItem[], which didn't exist
+}
+
+// Explicit many-to-many: an outfit has many items, an item can be in many outfits.
+// The link goes through OutfitClothingItem.
+model Outfit {
+  id         Int      @id @default(autoincrement())
+  name       String
+  occasion   String?
+  isFavorite Boolean  @default(false)
+  shareToken String?  @unique
+  createdAt  DateTime @default(now())
+
+  userId        Int
+  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clothingItems OutfitClothingItem[] // CHANGED: was ClothingItem[] (implicit style)
+  // CHANGED: removed "clothingItemsId Int" (it would link an outfit to only ONE item)
+  feedbacks     Feedback[]
+}
+
+// Join table: each row means "this clothing item is part of this outfit"
+model OutfitClothingItem {
+  outfitId       Int
+  clothingItemId Int
+
+  outfit       Outfit       @relation(fields: [outfitId], references: [id], onDelete: Cascade)
+  clothingItem ClothingItem @relation(fields: [clothingItemId], references: [id], onDelete: Cascade)
+
+  @@id([outfitId, clothingItemId]) // composite key: same item can't be added twice to one outfit
+}
+
+//Last model: Feedback. Try this one yourself using the same pattern. It belongs to two parents (the user who rated, and the outfit being rated), so it needs:
+// its own id, a liked boolean, an optional reason, and createdAt
+// two foreign keys, each with its own @relation line and onDelete: Cascade
+// a back-reference feedback Feedback[] in both User and Outfit
+model Feedback {
+  id        Int      @id @default(autoincrement())
+  liked     Boolean
+  reason    String?
+  createdAt DateTime @default(now())
+
+  userId   Int
+  outfitId Int
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  outfit Outfit @relation(fields: [outfitId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, outfitId])
+}

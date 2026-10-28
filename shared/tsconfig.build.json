@@ -1,0 +1,15 @@
+{
+  // Compiles src/ to JavaScript in dist/ for the NestJS server (Node can't run .ts from node_modules).
+  // The client (Vite) keeps importing src/ directly, see the "node" condition in package.json "exports".
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "module": "nodenext",
+    "target": "es2022",
+    "types": [],
+    "declaration": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}

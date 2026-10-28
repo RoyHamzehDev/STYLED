@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+/* Design tokens. Source of truth: design-system/styled/MASTER.md.
+   Tailwind v4 turns each variable into utilities, e.g. --color-accent gives
+   bg-accent / text-accent / border-accent, --radius-card gives rounded-card.
+   Components use only these tokens, never raw hex values. */
+@theme {
+  /* Fonts (loaded from Google Fonts in index.html). font-sans is the default. */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", ui-serif, Georgia, serif;
+
+  /* Neutrals: warm whites/greys and a charcoal "ink" for text. */
+  --color-background: #ffffff;
+  --color-surface: #faf7f2;
+  --color-surface-strong: #f0ebe3;
+  --color-ink: #1c1917;
+  --color-ink-muted: #57534e;
+  --color-border: #e7e1d8;
+  --color-border-strong: #d6cec3;
+
+  /* Brand tan. The light tan only reaches 2.26:1 on white, so it is used for
+     fills (with ink text on top, 7.73:1). accent-strong is the tan for text. */
+  --color-accent: #d4a373;
+  --color-accent-hover: #c8935f;
+  --color-accent-soft: #f5ebdd;
+  --color-accent-strong: #8a5a2b;
+  --color-on-accent: #1c1917;
+
+  /* Feedback colours. */
+  --color-danger: #b91c1c;
+  --color-danger-hover: #991b1b;
+  --color-danger-soft: #fef2f2;
+  --color-success: #15803d;
+  --color-success-soft: #f0fdf4;
+
+  /* Radii. */
+  --radius-control: 10px;
+  --radius-card: 16px;
+  --radius-panel: 24px;
+
+  /* Replaces Tailwind's default shadow scale with soft, warm-tinted shadows,
+     so shadow-sm / shadow-md / shadow-lg / shadow-xl all follow the design. */
+  --shadow-xs: 0 1px 2px rgb(28 25 23 / 0.04);
+  --shadow-sm: 0 1px 2px rgb(28 25 23 / 0.05);
+  --shadow-md: 0 4px 12px rgb(28 25 23 / 0.06);
+  --shadow-lg: 0 12px 32px rgb(28 25 23 / 0.1);
+  --shadow-xl: 0 20px 40px rgb(28 25 23 / 0.12);
+}
+
+@layer base {
+  body {
+    @apply bg-background font-sans text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display text-ink;
+  }
+
+  /* Tailwind v4 buttons default to cursor: default; every clickable gets a pointer. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  /* One visible keyboard focus ring everywhere (only for keyboard, not mouse clicks). */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent-strong;
+  }
+}
+
+/* Users who ask the OS for less motion get no animations or transitions.
+   Hover lifts/scales are written as motion-safe:hover:... so they are skipped too. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
